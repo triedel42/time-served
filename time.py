@@ -3,6 +3,7 @@
 
 import os
 import sys
+from getpass import getuser
 from pprint import pprint
 from datetime import datetime, timedelta
 
@@ -14,6 +15,22 @@ sec = os.getenv('FT_SECRET')
 if not uid or not sec:
     sys.exit('Error: Set $FT_UID and $FT_SECRET to your API credentials.')
 
+# Read in user from either argv, or user input (default is system user)
+user = None
+if len(sys.argv) > 1:
+	user = sys.argv[1]
+
+if not user:
+	user = os.getenv('FT_USER', None)
+
+if not user:
+	inp = input(f'user ({getuser()}): ')
+	if inp:
+		user = inp
+	else:
+		user = getuser()
+
+# prepare request
 data = {
     'grant_type': 'client_credentials',
     'client_id': uid,
@@ -21,7 +38,7 @@ data = {
 }
 
 resp = post('https://api.intra.42.fr/oauth/token', data=data).json()
-# pprint(resp)
+#pprint(resp)
 token = resp['access_token']
 
 auth_header = {
@@ -31,6 +48,8 @@ auth_header = {
 base = 'https://api.intra.42.fr/v2/'
 # endp = sys.argv[1]
 # url = base + endp
+
+
 
 
 def get_logtime(user, win=1):
@@ -53,7 +72,7 @@ def get_logtime(user, win=1):
     print(f'Total log time for {user} from {week_start} to {week_end} \n' + str(total.total_seconds() / 3600))
 
 
-get_logtime(input('user: '))
+get_logtime(user)
 
 # print('getting: ' + endp)
 # r = get(url, headers=auth_header)
