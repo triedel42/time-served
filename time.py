@@ -30,6 +30,10 @@ if not user:
 	else:
 		user = getuser()
 
+win = 1
+if len(sys.argv) > 2:
+    win = int(sys.argv[2])
+
 # prepare request
 data = {
     'grant_type': 'client_credentials',
@@ -72,7 +76,7 @@ def get_logtime(user, win=1):
     print(f'Total log time for {user} from {week_start} to {week_end} \n' + str(total.total_seconds() / 3600))
 
 
-get_logtime(user)
+get_logtime(user, win)
 
 # print('getting: ' + endp)
 # r = get(url, headers=auth_header)
